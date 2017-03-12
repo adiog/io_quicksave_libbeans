@@ -227,8 +227,8 @@ sqlite_api = {
     "Int": 'getInt()'
 }
 
-def make_bean(bean_path, bean_name):
-    bean_filename = bean_name + '.json'
+def make_bean(bean_path, bean_filename):
+    bean_name = bean_filename[:-5]
     bean_name_lower = bean_name.lower()
 
     bean_json = json.load(open(bean_path + '/' + bean_filename, 'r'))
@@ -312,4 +312,4 @@ def make_bean(bean_path, bean_name):
                  BODY))))))))))))))
 
 if __name__ == '__main__':
-    make_bean(bean_path=sys.argv[1], bean_name=sys.argv[2])
+    make_bean(bean_path=sys.argv[1], bean_filename=sys.argv[2])
