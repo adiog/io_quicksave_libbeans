@@ -387,6 +387,9 @@ class Bean(Atomic):
     def to_string(self):
         return json.dumps(self.__class__.to_simple_data(self))
 
+    def to_json(self):
+        return self.__class__.to_simple_data(self)
+
     @classmethod
     def cast_spec_dict(cls, simple_data):
         return {field: cls.cast_spec_field(field, field_spec, simple_data) for field, field_spec in cls.get_spec().items()}
