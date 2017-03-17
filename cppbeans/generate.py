@@ -151,7 +151,7 @@ def make_bean(bean_path, bean_file):
             serial_stmt += 'if (%s) Typoid<%s>::Serialize(*%s, writer);\n' % (bean_key, cpp_type, bean_key)
             update_stmt += 'if (bean.%s) %s = bean.%s;\n' % (bean_key, bean_key, bean_key)
         else:
-            cons_stmt += 'if (value.HasMember(%s_label)) this->%s = Typoid<%s>::FromValue(value[%s_label]); else throw(std::runtime_error(""));\n' % (bean_key, bean_key, cpp_type, bean_key)
+            cons_stmt += 'if (value.HasMember(%s_label)) this->%s = Typoid<%s>::FromValue(value[%s_label]); else throw(missing_mandatory_field(%s_label));\n' % (bean_key, bean_key, cpp_type, bean_key, bean_key)
             serial_stmt += 'Typoid<%s>::Serialize(%s, writer);\n' % (cpp_type, bean_key)
             update_stmt += '%s = bean.%s;\n' % (bean_key, bean_key)
     for inc in to_be_included:

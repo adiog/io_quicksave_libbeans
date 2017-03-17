@@ -119,5 +119,9 @@ std::string serialize(const T& t)
     return s.GetString();
 }
 
+class missing_mandatory_field : public std::runtime_error
+{
+    using std::runtime_error::runtime_error;
+};
 
 #endif

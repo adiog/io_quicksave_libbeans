@@ -17,6 +17,8 @@ class PythonBeanAPIError : public std::runtime_error
 class PyObjectPtr
 {
 public:
+    PyObjectPtr() = default;
+
     PyObjectPtr(PyObject *pyObject)
             : pyObject(pyObject)
     {
@@ -53,7 +55,7 @@ public:
     }
 
 private:
-    PyObject *pyObject;
+    PyObject *pyObject = nullptr;
 };
 
 
@@ -115,9 +117,14 @@ private:
     {
         if (pyFunction && PyCallable_Check(pyFunction))
         {
-            PyObjectPtr pyArguments = PyTuple_New(1);
-            PyTuple_SetItem(pyArguments, 0, pyArgument.steal());
-            return PyObject_CallObject(pyFunction, pyArguments);
+            if (pyArgument) {
+                PyObjectPtr pyArguments = PyTuple_New(1);
+                PyTuple_SetItem(pyArguments, 0, pyArgument.steal());
+                return PyObject_CallObject(pyFunction, pyArguments);
+            } else {
+                PyObjectPtr pyArguments = PyTuple_New(0);
+                return PyObject_CallObject(pyFunction, pyArguments);
+            }
         }
         else
         {
@@ -128,7 +135,10 @@ private:
     static PyObject* call(const char * pythonCallableName, PyObjectPtr& pyArgument)
     {
         PyObjectPtr pyFunction = PyObject_GetAttrString(PythonBeanAPI::getModule(), pythonCallableName);
-        return call(pyFunction, pyArgument);
+        if (pyFunction)
+            return call(pyFunction, pyArgument);
+        else
+            throw std::runtime_error(pythonCallableName);
     }
 };
 
