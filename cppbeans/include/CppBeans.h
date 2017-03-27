@@ -109,6 +109,23 @@ public:
     }
 };
 
+class SerializedDict : public std::string {
+public:
+    using std::string::string;
+
+    SerializedDict() = default;
+
+    SerializedDict(const rapidjson::Value& value) : std::string{value.GetString()}
+    {
+    }
+
+    template <typename Writer>
+    void Serialize(Writer& writer) const
+    {
+        writer.String(this->c_str());
+    }
+};
+
 template<typename T>
 std::string serialize(const T& t)
 {

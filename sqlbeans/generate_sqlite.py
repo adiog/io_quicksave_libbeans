@@ -7,6 +7,7 @@ sql_dict = {
     "String": "text",
     "Bool": "bool",
     "Base64": "text",
+    "SerializedDict": "text",
     "List": "List"
 }
 

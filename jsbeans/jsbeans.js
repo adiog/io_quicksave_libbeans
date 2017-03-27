@@ -272,6 +272,10 @@ class Base64 extends StringBean
 }
 register_atom("Base64", Base64);
 
+class SerializedDict extends StringBean
+{
+}
+register_atom("SerializedDict", SerializedDict);
 
 class Optional extends Typoid
 {

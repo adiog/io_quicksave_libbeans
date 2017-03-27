@@ -90,6 +90,7 @@ cpp_dict = {
     "String": "std::string",
     "Bool": "bool",
     "Base64": "Base64",
+    "SerializedDict": "SerializedDict",
     "List": "List"
 }
 

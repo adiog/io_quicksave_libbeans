@@ -243,6 +243,19 @@ class Base64(String):
 
 
 @register_atom()
+class SerializedDict(String):
+    def is_instance_of(self, an_object):
+        try:
+            json.loads(an_object)
+            return True
+        except json.JSONDecodeError:
+            return False
+
+    def get_default(self):
+        return '{}'
+
+
+@register_atom()
 class Optional(Typoid):
     element_type = None
 
@@ -382,7 +395,7 @@ class Bean(Atomic):
     @classmethod
     def to_simple_data(cls, an_object):
         dirty_dict = {k: v.to_simple_data(an_object.__dict__[k]) for k,v in cls.get_spec().items()}
-        return {k:v for k,v in dirty_dict.items() if v}
+        return {k:v for k,v in dirty_dict.items() if v is not None}
 
     def to_string(self):
         return json.dumps(self.__class__.to_simple_data(self))
