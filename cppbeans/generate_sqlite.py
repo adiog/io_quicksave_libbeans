@@ -282,19 +282,23 @@ def make_bean(bean_path, bean_filename):
     for i, bean_key in enumerate(fields):
         l = split_to_list(bean_json[bean_key], [])
 
+        is_optional = l[0] == 'Optional'
+        if l[0] == 'Optional':
+            l = l[1:]
+
         if bean_pk == bean_key:
             bind_placeholder.append('?')
             get_hash = 'if (!bean.%s) bean.%s = Hash::get();' % (bean_key, bean_key)
         else:
             bind_placeholder.append('?')
-            set_builder_stmt.append('if (bean.%s) {setBuilder += ((setBuilder != "") ? std::string(", ") : std::string("")) + std::string("%s = ?");}' % (bean_key, bean_key))
+            if is_optional:
+                set_builder_stmt.append('if (bean.%s) {setBuilder += ((setBuilder != "") ? std::string(", ") : std::string("")) + std::string("%s = ?");}' % (bean_key, bean_key))
+            else:
+                set_builder_stmt.append('setBuilder += ((setBuilder != "") ? std::string(", ") : std::string("")) + std::string("%s = ?");' % (bean_key))
         bind_with_pk_placeholder.append('?')
 
         set_stmt.append('%s = ?' % bean_key)
 
-        is_optional = l[0] == 'Optional'
-        if l[0] == 'Optional':
-            l = l[1:]
 
         cpp_type = ''
         for t in reversed(l):
