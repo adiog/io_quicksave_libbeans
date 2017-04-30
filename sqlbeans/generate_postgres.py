@@ -2,11 +2,14 @@ import json
 import sys
 import re
 
+schema = 'public'
+
 sql_dict = {
     "Int": "integer",
     "String": "text",
     "Bool": "bool",
     "Base64": "text",
+    "SerializedDict": "text",
     "List": "List"
 }
 
@@ -23,7 +26,7 @@ def create_row(name, row_type, suffix):
             else:
                 print('    "%s" %s NOT NULL%s' % (name, sql_dict.get(row_type, row_type.lower()), suffix))
 
-def make_bean(bean_path, bean_filename):
+def make_bean(bean_path, bean_filename, schema):
     bean_name = bean_filename[:-5].lower()
     with open(bean_path + '/' + bean_filename, 'r') as bean_file:
         bean_spec = json.load(bean_file)
@@ -37,7 +40,7 @@ def make_bean(bean_path, bean_filename):
         else:
             bean_pk = None
 
-        print('CREATE TABLE %s (' % bean_name)
+        print('CREATE TABLE %s.%s (' % (schema, bean_name))
 
         if bean_pk in bean_spec:
             if 'Int' in bean_spec[bean_pk]:
@@ -56,4 +59,6 @@ def make_bean(bean_path, bean_filename):
 
 
 if __name__ == '__main__':
-    make_bean(sys.argv[1], sys.argv[2])
+    if len(sys.argv) == 4:
+        schema = sys.argv[3]
+    make_bean(sys.argv[1], sys.argv[2], schema)
