@@ -114,6 +114,7 @@ public:
     using std::string::string;
 
     SerializedDict() = default;
+    //SerializedDict& operator=(const SerializedDict&) = default;
 
     SerializedDict(const rapidjson::Value& value) : std::string{value.GetString()}
     {

@@ -10,7 +10,7 @@ shift 2
 SPECIFIC_BEANS_ONLY=$*
 
 OUTPUT_DIR=$OUTPUT/generated/databaseBean
-mkdir -p $OUTPUT_DIR
+mkdir -p $OUTPUT_DIR/sqlite
 
 if [[ -z "$SPECIFIC_BEANS_ONLY" ]];
 then
@@ -26,6 +26,7 @@ for bean_file in $BEANS;
 do
     BEAN=$(basename $bean_file);
     echo "Genarating database $BEAN ..."
-    python3 generate_sqlite.py $INPUT $BEAN | clang-format > $OUTPUT_DIR/DatabaseBean${BEAN/.json/.h}
+    python3 generate_sqlite.py $INPUT $BEAN | clang-format > $OUTPUT_DIR/sqlite/DatabaseBean${BEAN/.json/.h}
+    echo "#include <databaseBean/sqlite/DatabaseBean${BEAN/.json/.h}>" >> $OUTPUT_DIR/DatabaseBeans.h
     echo "... genarating database $BEAN [DONE]"
 done

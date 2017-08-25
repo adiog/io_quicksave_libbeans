@@ -21,19 +21,19 @@ ___INC___
 #include <bean/___BEAN___Bean.h>
 
 
-template<typename T>
+template<typename DB, typename T>
 class DatabaseBean;
 
+using PostgresTransactionImpl = tao::postgres::transaction;
+
 template<>
-class DatabaseBean<___BEAN___Bean>
+class DatabaseBean<PostgresTransactionImpl, ___BEAN___Bean>
 {
 public:
-    template<typename DB>
-    static std::optional<___BEAN___Bean> get(DB* db, std::string hash)
+    static std::optional<___BEAN___Bean> get(PostgresTransactionImpl* tr, std::string hash)
     {
         try
         {
-            tao::postgres::transaction *tr = dynamic_cast<database::PostgresTransaction*>(db)->get();
             const char * query = "SELECT * FROM public.___TABLE___ WHERE ___PK___ = $1";
 
             auto result = tr->execute(query, hash);
@@ -54,14 +54,13 @@ public:
         }
     }
 
-    template<typename DB, typename FIELD_VALUE>
-    static List<___BEAN___Bean> get_by(DB* db, std::string field, FIELD_VALUE field_value)
+    template<typename FIELD_VALUE>
+    static List<___BEAN___Bean> get_by(PostgresTransactionImpl* tr, std::string field, FIELD_VALUE field_value)
     {
         List<___BEAN___Bean> result(0);
 
         try
         {
-            tao::postgres::transaction *tr = dynamic_cast<database::PostgresTransaction*>(db)->get();
             std::string query_str = Format::format("SELECT * FROM public.___TABLE___ WHERE %s = $1", field.c_str());
             const char * query = query_str.c_str();
 
@@ -88,12 +87,10 @@ public:
         return result;
     }
 
-    template<typename DB>
-    static void remove(DB* db, std::string hash)
+    static void remove(PostgresTransactionImpl* tr, std::string hash)
     {
         try
         {
-            tao::postgres::transaction *tr = dynamic_cast<database::PostgresTransaction*>(db)->get();
             const char * query = "DELETE FROM public.___TABLE___ WHERE ___PK___ = $1";
 
             tr->execute(query, hash);
@@ -104,12 +101,11 @@ public:
         }
     }
 
-    template<typename DB, typename FIELD_VALUE>
-    static void remove_by(DB* db, std::string field, FIELD_VALUE field_value)
+    template<typename FIELD_VALUE>
+    static void remove_by(PostgresTransactionImpl* tr, std::string field, FIELD_VALUE field_value)
     {
         try
         {
-            tao::postgres::transaction *tr = dynamic_cast<database::PostgresTransaction*>(db)->get();
             std::string query_str = Format::format("DELETE FROM public.___TABLE___ WHERE %s = $1", field.c_str());
             const char * query = query_str.c_str();
 
@@ -122,14 +118,12 @@ public:
 
     }
 
-    template<typename DB>
-    static List<___BEAN___Bean> sql(DB* db, std::string sql)
+    static List<___BEAN___Bean> sql(PostgresTransactionImpl* tr, std::string sql)
     {
         List<___BEAN___Bean> result(0);
 
         try
         {
-            tao::postgres::transaction *tr = dynamic_cast<database::PostgresTransaction*>(db)->get();
             const char * query = sql.c_str();
 
             auto query_result = tr->execute(query);
@@ -155,12 +149,10 @@ public:
         return result;
     }
 
-    template<typename DB>
-    static std::string insert(DB* db, ___BEAN___Bean bean)
+    static std::string insert(PostgresTransactionImpl* tr, ___BEAN___Bean bean)
     {
         try
         {
-            tao::postgres::transaction *tr = dynamic_cast<database::PostgresTransaction*>(db)->get();
             const char * query = "INSERT INTO public.___TABLE___ (___FIELDS___) VALUES (___BIND_MARK___)";
 
             int bindIndex = 1;
@@ -176,12 +168,10 @@ public:
         }
     }
 
-    template<typename DB>
-    static void insert_with_pk(DB* db, ___BEAN___Bean bean)
+    static void insert_with_pk(PostgresTransactionImpl* tr, ___BEAN___Bean bean)
     {
         try
         {
-            tao::postgres::transaction *tr = dynamic_cast<database::PostgresTransaction*>(db)->get();
             const char * query = "INSERT INTO public.___TABLE___ (___FIELDS___) VALUES (___BIND_PK_MARK___)";
 
             tr->execute(query, ___BIND_ALL___);
@@ -193,12 +183,10 @@ public:
         }
     }
 
-    template<typename DB>
-    static void update(DB* db, ___BEAN___Bean bean)
+    static void update(PostgresTransactionImpl* tr, ___BEAN___Bean bean)
     {
         try
         {
-            tao::postgres::transaction *tr = dynamic_cast<database::PostgresTransaction*>(db)->get();
             std::string setBuilder = "";
             ___UPDATE_SET_BUILDER___
             std::string query_template = Format::format("UPDATE public.___TABLE___ SET %s WHERE ___PK___ = $1", setBuilder.c_str());
@@ -212,12 +200,10 @@ public:
         }
     }
 /*
-    template<typename DB>
-    static void override(DB* db, ___BEAN___Bean bean)
+    static void override(PostgresTransactionImpl* tr, ___BEAN___Bean bean)
     {
         try
         {
-            tao::postgres::transaction *sqliteDatabase = dynamic_cast<database::SqliteTransaction*>(db)->get();
             const char * query = "UPDATE public.___TABLE___ SET ___SET_OVERRIDE___ WHERE ___PK___ = ?";
 
             int bindIndex = 1;

@@ -83,7 +83,7 @@ def make_bean(bean_path, bean_filename):
                 print_type(4, 'Int')
                 print_indent(4, 'description: "Primary Key"')
             else:
-                print_type('String')
+                print_type(4, 'String')
                 print_indent(4, 'description: "Primary Key"')
             bean_spec.pop(bean_pk)
 
