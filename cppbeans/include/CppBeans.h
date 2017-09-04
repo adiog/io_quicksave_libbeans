@@ -15,6 +15,7 @@ using boost::make_optional;
 #include "rapidjson/document.h"
 #include "rapidjson/stringbuffer.h"
 #include "rapidjson/writer.h"
+#include "rapidjson/prettywriter.h"
 #include <vector>
 
 using Value = rapidjson::GenericValue<rapidjson::UTF8<>>;
@@ -132,6 +133,16 @@ std::string serialize(const T& t)
 {
     rapidjson::StringBuffer s;
     rapidjson::Writer<rapidjson::StringBuffer> writer(s);
+    Typoid<T>::Serialize(t, writer);
+
+    return s.GetString();
+}
+
+template<typename T>
+std::string prettySerialize(const T& t)
+{
+    rapidjson::StringBuffer s;
+    rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(s);
     Typoid<T>::Serialize(t, writer);
 
     return s.GetString();
