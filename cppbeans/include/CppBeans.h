@@ -4,18 +4,13 @@
 #ifndef CPPBEANS_H
 #define CPPBEANS_H
 
-#include <boost/optional.hpp>
-using STRING = std::string;
-namespace std {
-using boost::optional;
-using boost::none;
-using boost::make_optional;
-}
+#include <absl/types/optional.h>
 
 #include "rapidjson/document.h"
 #include "rapidjson/stringbuffer.h"
 #include "rapidjson/writer.h"
 #include "rapidjson/prettywriter.h"
+
 #include <vector>
 
 using Value = rapidjson::GenericValue<rapidjson::UTF8<>>;

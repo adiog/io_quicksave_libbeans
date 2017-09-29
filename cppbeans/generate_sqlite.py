@@ -30,7 +30,7 @@ template<>
 class DatabaseBean<DB, ___BEAN___Bean>
 {
 public:
-    static std::optional<___BEAN___Bean> get(DB* sqliteDatabase, std::string hash)
+    static absl::optional<___BEAN___Bean> get(DB* sqliteDatabase, std::string hash)
     {
         try
         {
@@ -50,7 +50,7 @@ public:
         catch (std::exception& e)
         {
             std::cout << "exception: " << e.what() << std::endl;
-            return std::none;
+            return absl::nullopt;
         }
     }
 
@@ -314,7 +314,7 @@ def make_bean(bean_path, bean_filename):
                 cpp_type = t
 
         if is_optional:
-            cpp_opt_type = 'std::optional<%s>' % cpp_type
+            cpp_opt_type = 'absl::optional<%s>' % cpp_type
         else:
             cpp_opt_type = cpp_type
 
@@ -323,7 +323,7 @@ def make_bean(bean_path, bean_filename):
                 bind_update_stmt += 'if (bean.%s) query.bind(bindIndex++, *bean.%s);\n' % (bean_key, bean_key)
                 bind_stmt += 'if (bean.%s) query.bind(bindIndex++, *bean.%s); else query.bind(bindIndex++);\n' % (bean_key, bean_key)
             bind_all_stmt += 'if (bean.%s) query.bind(bindIndex++, *bean.%s); else query.bind(bindIndex++);\n' % (bean_key, bean_key)
-            retrieve_stmt += 'bean.%s = std::make_optional<%s>(query.getColumn(getIndex++).get%s());\n' % (bean_key, cpp_type, sqlite_api[l[-1]])
+            retrieve_stmt += 'bean.%s = absl::make_optional<%s>(query.getColumn(getIndex++).get%s());\n' % (bean_key, cpp_type, sqlite_api[l[-1]])
         else:
             if bean_pk != bean_key:
                 bind_stmt += 'query.bind(bindIndex++, bean.%s);\n' % (bean_key)

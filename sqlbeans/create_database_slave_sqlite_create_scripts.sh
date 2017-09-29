@@ -13,4 +13,5 @@ python3 ${GENERATOR} ${IO_QUICKSAVE_BEANS_DIR} File.json $SCHEMA
 python3 ${GENERATOR} ${IO_QUICKSAVE_BEANS_DIR} Action.json $SCHEMA
 python3 ${GENERATOR} ${IO_QUICKSAVE_BEANS_DIR} Tag.json $SCHEMA
 python3 ${GENERATOR} ${IO_QUICKSAVE_BEANS_DIR} Key.json $SCHEMA
+python3 ${GENERATOR} ${IO_QUICKSAVE_BEANS_DIR} Perspective.json $SCHEMA
 ) | sed -e 's# REFERENCES "user" ("user_hash")##'
