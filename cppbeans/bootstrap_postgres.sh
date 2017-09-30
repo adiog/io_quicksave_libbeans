@@ -9,7 +9,7 @@ OUTPUT=$2
 shift 2
 SPECIFIC_BEANS_ONLY=$*
 
-OUTPUT_DIR=$OUTPUT/generated/databaseBean
+OUTPUT_DIR=$OUTPUT/generated/qsgen/databaseBean
 mkdir -p $OUTPUT_DIR/postgres
 
 if [[ -z "$SPECIFIC_BEANS_ONLY" ]];
@@ -28,6 +28,6 @@ do
     BEAN=$(basename $bean_file);
     echo "Genarating database $BEAN ..."
     python3 generate_postgres.py $INPUT $BEAN | clang-format > $OUTPUT_DIR/postgres/DatabaseBean${BEAN/.json/.h}
-    echo "#include <databaseBean/postgres/DatabaseBean${BEAN/.json/.h}>" >> $OUTPUT_DIR/DatabaseBeans.h
+    echo "#include <qsgen/databaseBean/postgres/DatabaseBean${BEAN/.json/.h}>" >> $OUTPUT_DIR/DatabaseBeans.h
     echo "... genarating database $BEAN [DONE]"
 done

@@ -9,7 +9,7 @@ OUTPUT=$2
 shift 2
 SPECIFIC_BEANS_ONLY=$*
 
-OUTPUT_DIR=$OUTPUT/generated/bean
+OUTPUT_DIR=$OUTPUT/generated/qsgen/bean
 mkdir -p $OUTPUT_DIR
 
 if [[ -z "$SPECIFIC_BEANS_ONLY" ]];
@@ -36,4 +36,4 @@ echo "// Copyright (c) 2017 Aleksander Gajewski <adiog@quicksave.io>."
 echo ""
 echo "#pragma once"
 echo ""
-) > $OUTPUT/generated/databaseBean/DatabaseBeans.h
+) > $OUTPUT/generated/qsgen/databaseBean/DatabaseBeans.h
