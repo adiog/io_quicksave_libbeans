@@ -93,7 +93,7 @@ private:
 
     static PyObject * getModule()
     {
-        static const char *pythonModuleName = "PythonBeanAPI";
+        static const char *pythonModuleName = "quicksave_api.PythonBeanAPI";
         static PyObjectPtr pyModule = PyImport_ImportModule(pythonModuleName);
         return pyModule;
     }
