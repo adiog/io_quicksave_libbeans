@@ -5,13 +5,10 @@
 cd $(dirname $0)
 
 GENERATOR=generate_supersonic_memory.py
-IO_QUICKSAVE_BEANS_DIR=../../io_quicksave_beans
+IO_QUICKSAVE_BEANS_DIR=../../beans
 
-(
-python3 ${GENERATOR} ${IO_QUICKSAVE_BEANS_DIR} Meta.json
-#python3 ${GENERATOR} ${IO_QUICKSAVE_BEANS_DIR} File.json
-#python3 ${GENERATOR} ${IO_QUICKSAVE_BEANS_DIR} Action.json
-#python3 ${GENERATOR} ${IO_QUICKSAVE_BEANS_DIR} Tag.json
-#python3 ${GENERATOR} ${IO_QUICKSAVE_BEANS_DIR} Key.json
-#python3 ${GENERATOR} ${IO_QUICKSAVE_BEANS_DIR} Perspective.json
-) #| clang-format
+for bean in Meta File Action Tag Key Perspective;
+do
+  python3 ${GENERATOR} ${IO_QUICKSAVE_BEANS_DIR} ${bean}.json | clang-format > ../../../supersonic_quicksave/generated/SupersonicBean${bean}.h
+done
+
