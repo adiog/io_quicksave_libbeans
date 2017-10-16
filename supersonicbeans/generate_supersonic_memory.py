@@ -55,7 +55,7 @@ def insert_field(field, row_type):
         if use_deoptional:
             return f'if (bean.{field}) {{ add_row.{row_type}((ValueRef<{row_type_typedef}>(*bean.{field})).value()); }} else {{ add_row.Null(); }}'
         else:
-            return f'add_row.{row_type}((ValueRef<{row_type_typedef}>(bean.{field})).value());'
+            return f'add_row.{row_type_inserter}((ValueRef<{row_type_typedef}>(bean.{field})).value());'
 
 def decode_field(field, row_type):
     is_optional = 'Optional(' in row_type

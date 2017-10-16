@@ -7,9 +7,9 @@
 #include <absl/types/optional.h>
 
 #include "rapidjson/document.h"
+#include "rapidjson/prettywriter.h"
 #include "rapidjson/stringbuffer.h"
 #include "rapidjson/writer.h"
-#include "rapidjson/prettywriter.h"
 
 #include <vector>
 
@@ -88,13 +88,15 @@ public:
     }
 };
 
-class Base64 : public std::string {
+class Base64 : public std::string
+{
 public:
     using std::string::string;
 
     Base64() = default;
 
-    Base64(const rapidjson::Value& value) : std::string{value.GetString()}
+    Base64(const rapidjson::Value& value)
+            : std::string{value.GetString()}
     {
     }
 
@@ -105,14 +107,17 @@ public:
     }
 };
 
-class SerializedDict : public std::string {
+class SerializedDict : public std::string
+{
 public:
     using std::string::string;
 
     SerializedDict() = default;
-    //SerializedDict& operator=(const SerializedDict&) = default;
 
-    SerializedDict(const rapidjson::Value& value) : std::string{value.GetString()}
+    SerializedDict(std::string string) {}
+
+    SerializedDict(const rapidjson::Value& value)
+            : std::string{value.GetString()}
     {
     }
 
@@ -123,22 +128,22 @@ public:
     }
 };
 
-template<typename T>
+template <typename T>
 std::string serialize(const T& t)
 {
     rapidjson::StringBuffer s;
     rapidjson::Writer<rapidjson::StringBuffer> writer(s);
-    Typoid<T>::Serialize(t, writer);
+    t.Serialize(writer);
 
     return s.GetString();
 }
 
-template<typename T>
+template <typename T>
 std::string prettySerialize(const T& t)
 {
     rapidjson::StringBuffer s;
     rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(s);
-    Typoid<T>::Serialize(t, writer);
+    t.Serialize(writer);
 
     return s.GetString();
 }
