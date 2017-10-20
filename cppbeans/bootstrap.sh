@@ -23,10 +23,16 @@ else
     done
 fi
 
+REFERENCE_FILE=${OUTPUT}/qsgen/bean/ABI.h
+echo "#pragma once" > ${REFERENCE_FILE}
+
 for bean_file in $BEANS;
 do
     BEAN=$(basename $bean_file);
     echo "Genarating $BEAN ..."
-    python3 generate.py $INPUT $BEAN | clang-format > $OUTPUT_DIR/${BEAN/.json/Bean.h}
+    BEAN_HEADER_FILENAME=${BEAN/.json/Bean.h}
+    python3 generate.py $INPUT $BEAN | clang-format > $OUTPUT_DIR/${BEAN_HEADER_FILENAME}
     echo "... genarating $BEAN [DONE]"
+
+    echo "#include <qsgen/bean/${BEAN_HEADER_FILENAME}>" >> ${REFERENCE_FILE}
 done
