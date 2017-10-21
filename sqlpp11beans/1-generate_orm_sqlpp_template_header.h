@@ -11,6 +11,7 @@
 #include <sqlpp11/alias_provider.h>
 #include <sqlpp11/char_sequence.h>
 #include <sqlpp11/column_types.h>
+#include <sqlpp11/custom_query.h>
 #include <sqlpp11/functions.h>
 #include <sqlpp11/insert.h>
 #include <sqlpp11/multi_column.h>

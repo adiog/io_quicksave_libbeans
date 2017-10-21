@@ -19,6 +19,17 @@ public:
         return bean;
     }
 
+    static List<{{ bean_class }}> query(sqlpp::connection &db, const std::string& sqlQuery)
+    {
+        if (db.getRTTI() == sqlpp::connection::connection_backend::SQLITE3) {
+            return queryImplementation(*dynamic_cast<sqlpp::sqlite3::connection*>(&db), sqlQuery);
+        } else if (db.getRTTI() == sqlpp::connection::connection_backend::POSTGRESQL) {
+            return queryImplementation(*dynamic_cast<sqlpp::postgresql::connection*>(&db), sqlQuery);
+        }else {
+            throw std::runtime_error("");
+        }
+    }
+
     static absl::optional<{{ bean_class }}> get(sqlpp::connection &db, const std::string& hash)
     {
         if (db.getRTTI() == sqlpp::connection::connection_backend::SQLITE3) {
@@ -98,28 +109,21 @@ public:
         }
     }
 
-
-/*
-    static List<___BEAN___Bean> sql(PostgresTransactionImpl* tr, std::string sql)
+private:
+    template <typename DatabaseConnection>
+    static List<{{ bean_class }}> queryImplementation(DatabaseConnection &db, const std::string& sqlQuery)
     {
-        List<___BEAN___Bean> result(0);
+        const auto table = getTable();
+
+        List<{{ bean_class }}> result(0);
 
         try
         {
-            const char * query = sql.c_str();
-
-            auto query_result = tr->execute(query);
-
-            for(int rowIndex = 0; rowIndex < query_result.size(); ++rowIndex){
-                auto row = query_result.at(rowIndex);
-
-                ___BEAN___Bean bean;
-
-                int getIndex = 0;
-
-                ___RETRIEVE___
-
-                result.push_back(bean);
+            for (const auto& row : db(
+                    sqlpp::custom_query(sqlpp::verbatim(sqlQuery))
+                            .with_result_type_of(sqlpp::select(all_of(table)))))
+            {
+                result.push_back(constructor(row));
             }
         }
         catch (std::exception& e)
@@ -130,8 +134,7 @@ public:
 
         return result;
     }
-*/
-private:
+
     template <typename DatabaseConnection>
     static absl::optional<{{ bean_class }}> getImplementation(DatabaseConnection &db, const std::string& hash)
     {
@@ -162,7 +165,7 @@ private:
         try
         {
             for(const auto& row : db(select(all_of(table)).from(table).where(column == column_value))) {
-                result.emplace_back(constructor(row));
+                result.push_back(constructor(row));
             }
         }
         catch (std::exception& e)
