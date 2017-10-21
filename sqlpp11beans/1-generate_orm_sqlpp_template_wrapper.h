@@ -182,7 +182,7 @@ private:
     }
 
     template<typename DatabaseConnection, typename ColumnName, typename ColumnType>
-    static void removeByImplementation(sqlpp::connection &db, const ColumnName& column, const ColumnType& column_value)
+    static void removeByImplementation(DatabaseConnection &db, const ColumnName& column, const ColumnType& column_value)
     {
         const auto table = getTable();
 
