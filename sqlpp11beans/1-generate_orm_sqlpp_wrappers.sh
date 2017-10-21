@@ -12,7 +12,7 @@ mkdir -p ${OUTPUT_DIR}
 OUTPUT_FILE=${OUTPUT_DIR}/sqlppWrappers.h
 cp 1-generate_orm_sqlpp_template_header.h ${OUTPUT_FILE}
 
-for bean in Meta User; # File Action Tag Key Perspective;
+for bean in Meta File Action Tag Key Perspective User;
 do
   python3 ${GENERATOR} ${IO_QUICKSAVE_BEANS_DIR} ${bean}.json >> ${OUTPUT_FILE}
 done
