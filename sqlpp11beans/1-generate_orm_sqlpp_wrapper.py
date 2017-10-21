@@ -104,9 +104,9 @@ def up_column(field, row_type):
     source = sql_dict.get(row_type, row_type.lower())
     target = type_dict.get(row_type, row_type.lower())
     if is_optional:
-        return f'if (bean.{field}) prepare_update.params.{mule_case(field)} = (*bean.{field});'
+        return f'if (bean.{field}) {{ origBean.{field} = bean.{field}; }}'
     else:
-        return f'prepare_update.params.{mule_case(field)} = bean.{field};'
+        return f'origBean.{field} = bean.{field};'
 
 def over_column(field, row_type):
     is_optional = 'Optional(' in row_type
@@ -114,9 +114,9 @@ def over_column(field, row_type):
     source = sql_dict.get(row_type, row_type.lower())
     target = type_dict.get(row_type, row_type.lower())
     if is_optional:
-        return f'if (bean.{field}) {{prepare_update.params.{mule_case(field)} = (*bean.{field}); }} else {{prepare_update.params.{mule_case(field)} = nullptr;}}'
+        return f'if (bean.{field}) {{prepareStatement.params.{mule_case(field)} = (*bean.{field}); }}'#  else {{prepareStatement.params.{mule_case(field)} = sqlpp::null;}}'
     else:
-        return f'prepare_update.params.{mule_case(field)} = bean.{field};'
+        return f'prepareStatement.params.{mule_case(field)} = bean.{field};'
 
 def set_column(field, row_type):
     is_optional = 'Optional(' in row_type
@@ -124,7 +124,7 @@ def set_column(field, row_type):
     source = sql_dict.get(row_type, row_type.lower())
     target = type_dict.get(row_type, row_type.lower())
     if is_optional:
-        return f'(table.{mule_case(field)} = ((bean.{field}) ? (*bean.{field}) : nullptr))'
+        return f'(table.{mule_case(field)} = ((bean.{field}) ? (*bean.{field}) : sqlpp::null))'
     else:
         return f'(table.{mule_case(field)} = bean.{field})'
 

@@ -201,9 +201,13 @@ private:
 
             {{ get_hash }}
 
-            db(sqlpp::insert_into(table).set(
-                    {{ insert_setting }})
-            );
+            auto prepareStatement = db.prepare(sqlpp::insert_into(table).set(
+                    {{ param_setting }}
+            ));
+
+            {{ override_setting }}
+
+            db(prepareStatement);
 
             return *bean.{{ bean_primary_key }};
         }
@@ -220,12 +224,12 @@ private:
         {
             const auto table = getTable();
 
-            auto prepare_update = db.prepare(sqlpp::update(table).set(
-                    {{ param_setting }}
-            ).where(table.{{ table_primary_key }} == *bean.{{ bean_primary_key }})
-            );
+            auto optOrigBean = getImplementation(db, *bean.{{ bean_primary_key }});
+            auto& origBean = *optOrigBean;
 
             {{ update_setting }}
+
+            overrideImplementation(db, origBean);
         }
         catch (std::exception& e)
         {
@@ -240,12 +244,14 @@ private:
         {
             const auto table = getTable();
 
-            auto prepare_update = db.prepare(sqlpp::update(table).set(
+            auto prepareStatement = db.prepare(sqlpp::update(table).set(
                     {{ param_setting }}
             ).where(table.{{ table_primary_key }} == *bean.{{ bean_primary_key }})
             );
 
             {{ override_setting }}
+
+            db(prepareStatement);
         }
         catch (std::exception& e)
         {
