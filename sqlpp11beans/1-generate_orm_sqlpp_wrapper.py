@@ -87,7 +87,7 @@ def cast_column(field, row_type):
     source = sql_dict.get(row_type, row_type.lower())
     target = type_dict.get(row_type, row_type.lower())
     if is_optional:
-        return f'if (row.{mule_case(field)}.is_null()) bean.{field} = row.{mule_case(field)}.value();'
+        return f'if (!row.{mule_case(field)}.is_null()) bean.{field} = row.{mule_case(field)}.value();'
     else:
         return f'bean.{field} = row.{mule_case(field)}.value();'
 
