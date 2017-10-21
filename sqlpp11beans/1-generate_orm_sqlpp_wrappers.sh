@@ -5,14 +5,14 @@
 cd $(dirname $0)
 
 GENERATOR=1-generate_orm_sqlpp_wrapper.py
-IO_QUICKSAVE_BEANS_DIR=../../beans
+IO_QUICKSAVE_BEANS_DIR=../../io_quicksave_beans
 
 OUTPUT_DIR=../../../generated/qsgen/orm/
 mkdir -p ${OUTPUT_DIR}
 OUTPUT_FILE=${OUTPUT_DIR}/sqlppWrappers.h
 cp 1-generate_orm_sqlpp_template_header.h ${OUTPUT_FILE}
 
-for bean in Meta; # File Action Tag Key Perspective;
+for bean in Meta User; # File Action Tag Key Perspective;
 do
   python3 ${GENERATOR} ${IO_QUICKSAVE_BEANS_DIR} ${bean}.json >> ${OUTPUT_FILE}
 done

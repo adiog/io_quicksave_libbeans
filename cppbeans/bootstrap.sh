@@ -5,7 +5,7 @@
 cd $(dirname $0)
 
 PYTHONPATH=..:$PYTHONPATH
-INPUT=${1:-../../beans}
+INPUT=${1:-../../io_quicksave_beans}
 OUTPUT=${2:-../../../generated}
 shift 2
 SPECIFIC_BEANS_ONLY=$*

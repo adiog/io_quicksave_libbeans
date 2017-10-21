@@ -1,7 +1,10 @@
-namespace sqlpp {
+namespace qsgen {
+namespace orm {
+
+using namespace sqlpp;
 
 template<>
-class DatabaseBean<{{ bean_class }}>
+class ORM<{{ bean_class }}>
 {
 public:
     static qsgen::orm::{{ bean_table_class }}& getTable() {
@@ -16,123 +19,85 @@ public:
         return bean;
     }
 
-    template<typename DB>
-    static absl::optional<{{ bean_class }}> get(DB& db, const std::string& hash)
+    static absl::optional<{{ bean_class }}> get(sqlpp::connection &db, const std::string& hash)
     {
-        const auto table = getTable();
-
-        try
-        {
-            for(const auto& row : db(select(all_of(table)).from(table).where(table.{{ table_primary_key }} == hash).limit(1U)))
-            {
-                return constructor(row);
-            }
-        }
-        catch (std::exception& e)
-        {
-            std::cout << "exception: " << e.what() << std::endl;
-        }
-
-        return absl::nullopt;
-    }
-
-    template<typename DB, typename ColumnName, typename ColumnType>
-    static List<{{ bean_class }}> get_by(DB &db, ColumnName column, ColumnType column_value)
-    {
-        const auto table = getTable();
-
-        List<{{ bean_class }}> result(0);
-
-        try
-        {
-            for(const auto& row : db(select(all_of(table)).from(table).where(column == column_value))) {
-                result.emplace_back(constructor(row));
-            }
-        }
-        catch (std::exception& e)
-        {
-            std::cout << "exception: " << e.what() << std::endl;
-        }
-
-        return result;
-    }
-
-    template<typename DB>
-    static void remove(DB& db, const std::string& hash)
-    {
-        const auto table = getTable();
-
-        db(remove_from(table).where(table.{{ table_primary_key }} == hash));
-    }
-
-    template<typename DB, typename ColumnName, typename ColumnType>
-    static void remove_by(DB &db, ColumnName column, ColumnType column_value)
-    {
-        const auto table = getTable();
-
-        db(remove_from(table).where(column == column_value));
-    }
-
-    template<typename DB>
-    static std::string insert(DB& db, {{ bean_class }} bean)
-    {
-        try
-        {
-            const auto table = getTable();
-
-            {{ get_hash }}
-
-            db(sqlpp::insert_into(table).set(
-                    {{ insert_setting }})
-            );
-
-            return *bean.{{ bean_primary_key }};
-        }
-        catch (std::exception& e)
-        {
-            std::cout << "exception: " << e.what() << std::endl;
+        if (db.getRTTI() == sqlpp::connection::connection_backend::SQLITE3) {
+            return getImplementation(*dynamic_cast<sqlpp::sqlite3::connection*>(&db), hash);
+        } else if (db.getRTTI() == sqlpp::connection::connection_backend::POSTGRESQL) {
+            return getImplementation(*dynamic_cast<sqlpp::postgresql::connection*>(&db), hash);
+        }else {
+            throw std::runtime_error("");
         }
     }
 
-    template<typename DB>
-    static void update(DB& db, {{ bean_class }} bean)
+    template<typename ColumnName, typename ColumnType>
+    static List<{{ bean_class }}> getBy(sqlpp::connection &db, const ColumnName& column, const ColumnType& column_value)
     {
-        try
-        {
-            const auto table = getTable();
-
-            auto prepare_update = db.prepare(sqlpp::update(table).set(
-                    {{ param_setting }}
-                ).where(table.{{ table_primary_key }} = bean.{{ bean_primary_key }})
-            );
-
-            {{ update_setting }}
-        }
-        catch (std::exception& e)
-        {
-            std::cout << "exception: " << e.what() << std::endl;
+        if (db.getRTTI() == sqlpp::connection::connection_backend::SQLITE3) {
+            return getByImplementation(*dynamic_cast<sqlpp::sqlite3::connection*>(&db), column, column_value);
+        } else if (db.getRTTI() == sqlpp::connection::connection_backend::POSTGRESQL) {
+            return getByImplementation(*dynamic_cast<sqlpp::postgresql::connection*>(&db), column, column_value);
+        }else {
+            throw std::runtime_error("");
         }
     }
 
-    template<typename DB>
-    static void override(DB& db, {{ bean_class }} bean)
+    static void remove(sqlpp::connection &db, const std::string& hash)
     {
-        try
-        {
-            const auto table = getTable();
-
-            auto prepare_update = db.prepare(sqlpp::update(table).set(
-                    {{ param_setting }}
-            ).where(table.{{ table_primary_key }} = bean.{{ bean_primary_key }})
-            );
-
-            {{ override_setting }}
-        }
-        catch (std::exception& e)
-        {
-            std::cout << "exception: " << e.what() << std::endl;
+        if (db.getRTTI() == sqlpp::connection::connection_backend::SQLITE3) {
+            return removeImplementation(*dynamic_cast<sqlpp::sqlite3::connection*>(&db), hash);
+        } else if (db.getRTTI() == sqlpp::connection::connection_backend::POSTGRESQL) {
+            return removeImplementation(*dynamic_cast<sqlpp::postgresql::connection*>(&db), hash);
+        }else {
+            throw std::runtime_error("");
         }
     }
+
+    template<typename ColumnName, typename ColumnType>
+    static void removeBy(sqlpp::connection &db, const ColumnName& column, const ColumnType& column_value)
+    {
+        if (db.getRTTI() == sqlpp::connection::connection_backend::SQLITE3) {
+            return removeByImplementation(*dynamic_cast<sqlpp::sqlite3::connection*>(&db), column, column_value);
+        } else if (db.getRTTI() == sqlpp::connection::connection_backend::POSTGRESQL) {
+            return removeByImplementation(*dynamic_cast<sqlpp::postgresql::connection*>(&db), column, column_value);
+        }else {
+            throw std::runtime_error("");
+        }
+    }
+
+    static std::string insert(sqlpp::connection &db, {{ bean_class }}& bean)
+    {
+        if (db.getRTTI() == sqlpp::connection::connection_backend::SQLITE3) {
+            return insertImplementation(*dynamic_cast<sqlpp::sqlite3::connection*>(&db), bean);
+        } else if (db.getRTTI() == sqlpp::connection::connection_backend::POSTGRESQL) {
+            return insertImplementation(*dynamic_cast<sqlpp::postgresql::connection*>(&db), bean);
+        }else {
+            throw std::runtime_error("");
+        }
+    }
+
+    static void update(sqlpp::connection &db, const {{ bean_class }}& bean)
+    {
+        if (db.getRTTI() == sqlpp::connection::connection_backend::SQLITE3) {
+            return updateImplementation(*dynamic_cast<sqlpp::sqlite3::connection*>(&db), bean);
+        } else if (db.getRTTI() == sqlpp::connection::connection_backend::POSTGRESQL) {
+            return updateImplementation(*dynamic_cast<sqlpp::postgresql::connection*>(&db), bean);
+        }else {
+            throw std::runtime_error("");
+        }
+    }
+
+    static void override(sqlpp::connection &db, const {{ bean_class }}& bean)
+    {
+        if (db.getRTTI() == sqlpp::connection::connection_backend::SQLITE3) {
+            return overrideImplementation(*dynamic_cast<sqlpp::sqlite3::connection*>(&db), bean);
+        } else if (db.getRTTI() == sqlpp::connection::connection_backend::POSTGRESQL) {
+            return overrideImplementation(*dynamic_cast<sqlpp::postgresql::connection*>(&db), bean);
+        }else {
+            throw std::runtime_error("");
+        }
+    }
+
 
 /*
     static List<___BEAN___Bean> sql(PostgresTransactionImpl* tr, std::string sql)
@@ -166,5 +131,126 @@ public:
         return result;
     }
 */
+private:
+    template <typename DatabaseConnection>
+    static absl::optional<{{ bean_class }}> getImplementation(DatabaseConnection &db, const std::string& hash)
+    {
+        const auto table = getTable();
+
+        try
+        {
+            for(const auto& row : db(select(all_of(table)).from(table).where(table.{{ table_primary_key }} == hash).limit(1U)))
+            {
+                return constructor(row);
+            }
+        }
+        catch (std::exception& e)
+        {
+            std::cout << "exception: " << e.what() << std::endl;
+        }
+
+        return absl::nullopt;
+    }
+
+    template<typename DatabaseConnection, typename ColumnName, typename ColumnType>
+    static List<{{ bean_class }}> getByImplementation(DatabaseConnection &db, const ColumnName& column, const ColumnType& column_value)
+    {
+        const auto table = getTable();
+
+        List<{{ bean_class }}> result(0);
+
+        try
+        {
+            for(const auto& row : db(select(all_of(table)).from(table).where(column == column_value))) {
+                result.emplace_back(constructor(row));
+            }
+        }
+        catch (std::exception& e)
+        {
+            std::cout << "exception: " << e.what() << std::endl;
+        }
+
+        return result;
+    }
+
+    template<typename DatabaseConnection>
+    static void removeImplementation(DatabaseConnection &db, const std::string& hash)
+    {
+        const auto table = getTable();
+
+        db(remove_from(table).where(table.{{ table_primary_key }} == hash));
+    }
+
+    template<typename DatabaseConnection, typename ColumnName, typename ColumnType>
+    static void removeByImplementation(sqlpp::connection &db, const ColumnName& column, const ColumnType& column_value)
+    {
+        const auto table = getTable();
+
+        db(remove_from(table).where(column == column_value));
+    }
+
+    template<typename DatabaseConnection>
+    static std::string insertImplementation(DatabaseConnection &db, {{ bean_class }}& bean)
+    {
+        try
+        {
+            const auto table = getTable();
+
+            {{ get_hash }}
+
+            db(sqlpp::insert_into(table).set(
+                    {{ insert_setting }})
+            );
+
+            return *bean.{{ bean_primary_key }};
+        }
+        catch (std::exception& e)
+        {
+            std::cout << "exception: " << e.what() << std::endl;
+        }
+    }
+
+    template<typename DatabaseConnection>
+    static void updateImplementation(DatabaseConnection &db, const {{ bean_class }}& bean)
+    {
+        try
+        {
+            const auto table = getTable();
+
+            auto prepare_update = db.prepare(sqlpp::update(table).set(
+                    {{ param_setting }}
+            ).where(table.{{ table_primary_key }} == *bean.{{ bean_primary_key }})
+            );
+
+            {{ update_setting }}
+        }
+        catch (std::exception& e)
+        {
+            std::cout << "exception: " << e.what() << std::endl;
+        }
+    }
+
+    template<typename DatabaseConnection>
+    static void overrideImplementation(DatabaseConnection &db, const {{ bean_class }}& bean)
+    {
+        try
+        {
+            const auto table = getTable();
+
+            auto prepare_update = db.prepare(sqlpp::update(table).set(
+                    {{ param_setting }}
+            ).where(table.{{ table_primary_key }} == *bean.{{ bean_primary_key }})
+            );
+
+            {{ override_setting }}
+        }
+        catch (std::exception& e)
+        {
+            std::cout << "exception: " << e.what() << std::endl;
+        }
+    }
+
 };
 }
+}
+

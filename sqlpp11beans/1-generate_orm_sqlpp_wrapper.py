@@ -67,8 +67,14 @@ def decode_field(field, row_type):
     else:
         return f'bean.{field} = QuicksaveCast<{source}, {target}>()'
 
+def first_lower(text):
+    return text[0].lower() + text[1:]
+
+def first_upper(text):
+    return text[0].upper() + text[1:]
+
 def camel_case(text):
-    return ''.join([x.title() for x in text.split('_')])
+    return ''.join([first_upper(x) for x in text.split('_')])
 
 def mule_case(text):
     text = camel_case(text)
@@ -100,7 +106,7 @@ def up_column(field, row_type):
     if is_optional:
         return f'if (bean.{field}) prepare_update.params.{mule_case(field)} = (*bean.{field});'
     else:
-        return f'prepare_update.params.{mule_case(field)} = bean.{field})'
+        return f'prepare_update.params.{mule_case(field)} = bean.{field};'
 
 def over_column(field, row_type):
     is_optional = 'Optional(' in row_type
@@ -110,7 +116,7 @@ def over_column(field, row_type):
     if is_optional:
         return f'if (bean.{field}) {{prepare_update.params.{mule_case(field)} = (*bean.{field}); }} else {{prepare_update.params.{mule_case(field)} = nullptr;}}'
     else:
-        return f'prepare_update.params.{mule_case(field)} = bean.{field});'
+        return f'prepare_update.params.{mule_case(field)} = bean.{field};'
 
 def set_column(field, row_type):
     is_optional = 'Optional(' in row_type
