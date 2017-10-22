@@ -2,7 +2,7 @@ import json
 import sys
 import re
 
-schema = 'public'
+schema = 'adiog'
 
 sql_dict = {
     "Int": "integer",
@@ -13,18 +13,21 @@ sql_dict = {
     "List": "List"
 }
 
-def create_row(name, row_type, suffix):
+def create_row(name, row_type, suffix, schema):
     if not 'List' in row_type:
         if '_hash' in name:
-            print('    "%s" text NOT NULL REFERENCES "%s" ("%s")%s' % (name, name[:-5], name, suffix))
+            print(f'    "{name}" text NOT NULL REFERENCES {schema}.{name[:-5]} ({name}){suffix}')
         elif '_id' in name:
-            print('    "%s" integer NOT NULL REFERENCES "%s" ("%s")%s' % (name, name[:-3], name, suffix))
+            print(f'    "{name}" integer NOT NULL REFERENCES {schema}.{name[:-3]} ({name}){suffix}')
         else:
             if 'Optional(' in row_type:
                 row_type = row_type[9:-1]
-                print('    "%s" %s NULL%s' % (name, sql_dict.get(row_type, row_type.lower()), suffix))
+                sql_t = sql_dict.get(row_type, row_type.lower())
+                print(f'    "{name}" {sql_t} NULL{suffix}')
             else:
-                print('    "%s" %s NOT NULL%s' % (name, sql_dict.get(row_type, row_type.lower()), suffix))
+                sql_t = sql_dict.get(row_type, row_type.lower())
+                print(f'    "{name}" {sql_t} NOT NULL{suffix}')
+
 
 def make_bean(bean_path, bean_filename, schema):
     bean_name = bean_filename[:-5].lower()
@@ -51,8 +54,8 @@ def make_bean(bean_path, bean_filename, schema):
 
         fields = sorted(bean_spec)
         for bean_key in fields[:-1]:
-            create_row(bean_key, bean_spec[bean_key], ',')
-        create_row(fields[-1], bean_spec[fields[-1]], '')
+            create_row(bean_key, bean_spec[bean_key], ',', schema)
+        create_row(fields[-1], bean_spec[fields[-1]], '', schema)
         print(');')
         print()
 

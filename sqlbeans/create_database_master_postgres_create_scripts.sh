@@ -4,5 +4,5 @@ cd $(dirname $0)
 
 GENERATOR=generate_postgres.py
 
-python3 ${GENERATOR} ${IO_QUICKSAVE_BEANS_DIR} User.json
+python3 ${GENERATOR} ../../io_quicksave_beans User.json
 
