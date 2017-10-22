@@ -49,6 +49,15 @@ public:
         ___SERIAL___ writer.EndObject();
     }
 
+    friend std::ostream& operator<<(std::ostream& os, const ___BEAN___Bean& bean)
+    {
+        rapidjson::StringBuffer s;
+        rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(s);
+        bean.Serialize(writer);
+        os << s.GetString();
+        return os;
+    }
+  
     std::string to_string() const
     {
         rapidjson::StringBuffer s;

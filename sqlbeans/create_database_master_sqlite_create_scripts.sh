@@ -4,4 +4,4 @@ cd $(dirname $0)
 
 GENERATOR=generate_sqlite.py
 
-python3 ${GENERATOR} ../../beans User.json
+python3 ${GENERATOR} ../../io_quicksave_beans User.json
