@@ -26,16 +26,14 @@
 
 #include <CppBeans.h>
 
-#include <qsgen/bean/ABI.h>
+#include <qsgen/ABI.h>
 #include <qsgen/orm/sqlppTables.h>
 
 #include <qs/util/hash.h>
 
 
-namespace qsgen {
-namespace orm {
+namespace qs {
 
 template <typename T>
 class ORM;
-}
 }

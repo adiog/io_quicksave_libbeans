@@ -10,7 +10,7 @@ OUTPUT=${2:-../../../generated}
 shift 2
 SPECIFIC_BEANS_ONLY=$*
 
-OUTPUT_DIR=$OUTPUT/qsgen/bean
+OUTPUT_DIR=$OUTPUT/qsgen/abi
 mkdir -p $OUTPUT_DIR
 
 if [[ -z "$SPECIFIC_BEANS_ONLY" ]];
@@ -23,7 +23,7 @@ else
     done
 fi
 
-REFERENCE_FILE=${OUTPUT}/qsgen/bean/ABI.h
+REFERENCE_FILE=${OUTPUT}/qsgen/ABI.h
 echo "#pragma once" > ${REFERENCE_FILE}
 
 for bean_file in $BEANS;
@@ -34,5 +34,5 @@ do
     python3 generate.py $INPUT $BEAN | clang-format > $OUTPUT_DIR/${BEAN_HEADER_FILENAME}
     echo "... genarating $BEAN [DONE]"
 
-    echo "#include <qsgen/bean/${BEAN_HEADER_FILENAME}>" >> ${REFERENCE_FILE}
+    echo "#include <qsgen/abi/${BEAN_HEADER_FILENAME}>" >> ${REFERENCE_FILE}
 done

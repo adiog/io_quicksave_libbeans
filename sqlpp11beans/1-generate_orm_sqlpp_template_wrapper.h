@@ -1,14 +1,11 @@
-namespace qsgen {
-namespace orm {
-
-using namespace sqlpp;
+namespace qs {
 
 template<>
 class ORM<{{ bean_class }}>
 {
 public:
-    static qsgen::orm::{{ bean_table_class }}& getTable() {
-        static qsgen::orm::{{ bean_table_class }} table{};
+    static qs::orm::{{ bean_table_class }}& getTable() {
+        static qs::orm::{{ bean_table_class }} table{};
         return table;
     }
 
@@ -260,6 +257,5 @@ private:
     }
 
 };
-}
 }
 
